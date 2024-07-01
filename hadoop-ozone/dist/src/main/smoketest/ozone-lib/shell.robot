@@ -22,10 +22,14 @@ Library     String
 Bucket Exists
     [arguments]    ${bucket}
     ${rc}    ${output} =      Run And Return Rc And Output             timeout 15 ozone sh bucket info ${bucket}
-    Return From Keyword If    ${rc} != 0                               ${FALSE}
-    Return From Keyword If    'VOLUME_NOT_FOUND' in '''${output}'''    ${FALSE}
-    Return From Keyword If    'BUCKET_NOT_FOUND' in '''${output}'''    ${FALSE}
-    [Return]                  ${TRUE}
+    IF    ${rc} != 0
+        RETURN    ${FALSE}
+    ELSE IF    'VOLUME_NOT_FOUND' in '''${output}'''
+        RETURN    ${FALSE}
+    ELSE IF    'BUCKET_NOT_FOUND' in '''${output}'''
+        RETURN    ${FALSE}
+    END
+    RETURN                  ${TRUE}
 
 Compare Key With Local File
     [arguments]    ${key}    ${file}
@@ -35,7 +39,7 @@ Compare Key With Local File
     ${rc} =        Run And Return Rc    diff -q ${file} ${tmpfile}
     Execute        rm -f ${tmpfile}
     ${result} =    Set Variable If    ${rc} == 0    ${TRUE}   ${FALSE}
-    [Return]       ${result}
+    RETURN       ${result}
 
 Key Should Match Local File
     [arguments]    ${key}    ${file}
@@ -50,7 +54,7 @@ Verify ACL
 Create Random Volume
     ${random} =    Generate Random String  5  [LOWER]
     Execute        ozone sh volume create o3://${OM_SERVICE_ID}/vol-${random}
-    [return]       vol-${random}
+    RETURN       vol-${random}
 
 Find Jars Dir
     ${dir} =    Execute    ozone envvars | grep 'HDDS_LIB_JARS_DIR' | cut -f2 -d= | sed -e "s/'//g" -e 's/"//g'

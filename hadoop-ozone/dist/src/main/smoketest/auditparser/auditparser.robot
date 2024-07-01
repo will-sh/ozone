@@ -30,7 +30,7 @@ ${auditworkdir}      /tmp
 Set username
     ${hostname} =          Execute         hostname
     Set Suite Variable     ${user}         testuser/${hostname}@EXAMPLE.COM
-    [return]               ${user}
+    RETURN               ${user}
 
 Create data
     Freon OMBG    prefix=auditparser    n=${buckets}

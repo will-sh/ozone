@@ -33,32 +33,34 @@ ${OZONE_S3_ADDRESS_STYLE}      path
 Execute AWSS3APICli
     [Arguments]       ${command}
     ${output} =       Execute                    aws s3api --endpoint-url ${ENDPOINT_URL} ${command}
-    [return]          ${output}
+    RETURN          ${output}
 
 # For possible AWS CLI return codes see: https://docs.aws.amazon.com/cli/latest/topic/return-codes.html
 Execute AWSS3APICli and checkrc
     [Arguments]       ${command}                 ${expected_error_code}
     ${output} =       Execute and checkrc        aws s3api --endpoint-url ${ENDPOINT_URL} ${command}  ${expected_error_code}
-    [return]          ${output}
+    RETURN          ${output}
 
 Execute AWSS3APICli and ignore error
     [Arguments]       ${command}
     ${output} =       Execute And Ignore Error   aws s3api --endpoint-url ${ENDPOINT_URL} ${command}
-    [return]          ${output}
+    RETURN          ${output}
 
 Execute AWSS3Cli
     [Arguments]       ${command}
     ${output} =       Execute                     aws s3 --endpoint-url ${ENDPOINT_URL} ${command}
-    [return]          ${output}
+    RETURN          ${output}
 
 Execute AWSS3CliDebug
     [Arguments]       ${command}
     ${output} =       Execute                     aws --debug s3 --endpoint ${ENDPOINT_URL} ${command}
-    [return]          ${output}
+    RETURN          ${output}
 
 Install aws cli
     ${rc}              ${output} =                 Run And Return Rc And Output           which aws
-    Return From Keyword If    '${rc}' == '0'
+    IF    '${rc}' == '0'
+        RETURN
+    END
     ${rc}              ${output} =                 Run And Return Rc And Output           which apt-get
     Run Keyword if     '${rc}' == '0'              Install aws cli s3 debian
     ${rc}              ${output} =                 Run And Return Rc And Output           yum --help
@@ -115,13 +117,13 @@ Restore AWS access key
 
 Generate Ozone String
     ${randStr} =         Generate Random String     10  [NUMBERS]
-    [Return]             ozone-test-${randStr}
+    RETURN             ozone-test-${randStr}
 
 Create bucket
     ${postfix} =         Generate Ozone String
     ${bucket} =          Set Variable               bucket-${postfix}
                          Create bucket with name    ${bucket}
-    [Return]             ${bucket}
+    RETURN             ${bucket}
 
 Create bucket with name
     [Arguments]          ${bucket}
@@ -134,10 +136,12 @@ Create bucket with layout
     ${postfix} =         Generate Ozone String
     ${bucket} =          Set Variable    bucket-${postfix}
     ${result} =          Execute         ozone sh bucket create --layout ${layout} s3v/${bucket}
-    [Return]             ${bucket}
+    RETURN             ${bucket}
 
 Setup s3 tests
-    Return From Keyword if    ${OZONE_S3_TESTS_SET_UP}
+    IF    ${OZONE_S3_TESTS_SET_UP}
+        RETURN
+    END
     Run Keyword        Generate random prefix
     Run Keyword        Install aws cli
     Run Keyword if    '${OZONE_S3_SET_CREDENTIALS}' == 'true'    Setup v4 headers
@@ -149,7 +153,9 @@ Setup s3 tests
 
 Setup links for S3 tests
     ${exists} =        Bucket Exists    o3://${OM_SERVICE_ID}/s3v/link
-    Return From Keyword If    ${exists}
+    IF    ${exists}
+        RETURN
+    END
     Execute            ozone sh volume create o3://${OM_SERVICE_ID}/legacy
     Execute            ozone sh bucket create --layout ${BUCKET_LAYOUT} o3://${OM_SERVICE_ID}/legacy/source-bucket
     Create link        link
@@ -160,19 +166,25 @@ Create generated bucket
     Set Global Variable   ${BUCKET}
 
 Create encrypted bucket
-    Return From Keyword if    '${SECURITY_ENABLED}' == 'false'
+    IF    '${SECURITY_ENABLED}' == 'false'
+        RETURN
+    END
     ${exists} =        Bucket Exists    o3://${OM_SERVICE_ID}/s3v/encrypted
-    Return From Keyword If    ${exists}
+    IF    ${exists}
+        RETURN
+    END
     Execute            ozone sh bucket create -k ${KEY_NAME} --layout ${BUCKET_LAYOUT} o3://${OM_SERVICE_ID}/s3v/encrypted
 
 Create link
     [arguments]       ${bucket}
     Execute           ozone sh bucket link o3://${OM_SERVICE_ID}/legacy/source-bucket o3://${OM_SERVICE_ID}/s3v/${bucket}
-    [return]          ${bucket}
+    RETURN          ${bucket}
 
 Create EC bucket
     ${exists} =        Bucket Exists    o3://${OM_SERVICE_ID}/s3v/erasure
-    Return From Keyword If    ${exists}
+    IF    ${exists}
+        RETURN
+    END
     Execute            ozone sh bucket create --replication rs-3-2-1024k --type EC --layout ${BUCKET_LAYOUT} o3://${OM_SERVICE_ID}/s3v/erasure
 
 Generate random prefix

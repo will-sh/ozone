@@ -24,18 +24,18 @@ Execute read-replicas CLI tool
     ${directory} =                  Execute     ls -d /opt/hadoop/${VOLUME}_${BUCKET}_${TESTFILE}_*/ | tail -n 1
     Directory Should Exist          ${directory}
     File Should Exist               ${directory}/${TESTFILE}_manifest
-    [Return]                        ${directory}
+    RETURN                        ${directory}
 
 Execute Lease recovery cli
     [Arguments]                     ${KEY_PATH}
     ${result} =                     Execute And Ignore Error      ozone debug recover --path=${KEY_PATH}
-    [Return]                        ${result}
+    RETURN                        ${result}
 
 Read Replicas Manifest
     ${manifest} =        Get File        ${DIR}/${TESTFILE}_manifest
     ${json} =            Evaluate        json.loads('''${manifest}''')        json
     Validate JSON                        ${json}
-    [return]    ${json}
+    RETURN    ${json}
 
 Validate JSON
     [arguments]                     ${json}
@@ -66,7 +66,7 @@ Get Replica Filenames
 
     ${filenames} =   Catenate    @{list}
 
-    [return]    ${filenames}
+    RETURN    ${filenames}
 
 Verify Healthy Replica
     [arguments]              ${json}    ${replica}    ${expected_md5sum}
