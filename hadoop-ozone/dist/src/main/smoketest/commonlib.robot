@@ -29,7 +29,7 @@ ${OM_SERVICE_ID}     om
 Get test user principal
     [arguments]         ${user}
     ${instance} =       Execute                    hostname | sed 's/scm[0-9].org/scm/;s/scm[0-9]/scm/;s/om[0-9]/om/'
-    RETURN            ${user}/${instance}@EXAMPLE.COM
+    [return]            ${user}/${instance}@EXAMPLE.COM
 
 Kinit HTTP user
     Pass Execution If   '${SECURITY_ENABLED}' == 'false'    Skip in unsecure cluster
