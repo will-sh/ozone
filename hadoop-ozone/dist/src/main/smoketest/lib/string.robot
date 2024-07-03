@@ -24,7 +24,7 @@ Ensure Leading
     ${first} =     Get Substring      ${string}                  0            1
     ${result} =    Set Variable If    '${first}' == '${char}'    ${string}    ${char}${string}
 
-    RETURN       ${result}
+    [return]       ${result}
 
 
 Ensure Trailing
@@ -33,5 +33,5 @@ Ensure Trailing
     ${last} =      Get Substring      ${string}                 -1
     ${result} =    Set Variable If    '${last}' == '${char}'    ${string}    ${string}${char}
 
-    RETURN       ${result}
+    [return]       ${result}
 

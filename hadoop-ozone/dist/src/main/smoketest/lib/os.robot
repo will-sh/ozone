@@ -25,14 +25,14 @@ Execute And Ignore Error
     [arguments]                     ${command}
     ${rc}                           ${output} =                 Run And Return Rc And Output           ${command}
     Log                             ${output}
-    RETURN                        ${output}
+    [return]                        ${output}
 
 Execute and checkrc
     [arguments]                     ${command}                  ${expected_error_code}
     ${rc}                           ${output} =                 Run And Return Rc And Output           ${command}
     Log                             ${output}
     Should Be Equal As Integers     ${rc}                       ${expected_error_code}
-    RETURN                        ${output}
+    [return]                        ${output}
 
 Compare files
     [arguments]                 ${file1}                   ${file2}
@@ -46,8 +46,8 @@ Create Random File
     File Should Not Exist    ${tmpfile}
     ${content} =             Set Variable   "Random string"
     Create File              ${tmpfile}    ${content}
-    RETURN                 ${tmpfile}
+    [return]                 ${tmpfile}
 
 List All Processes
     ${output} =    Execute    ps aux
-    RETURN    ${output}
+    [return]    ${output}
