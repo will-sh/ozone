@@ -29,7 +29,7 @@ ${bucket}          bucket1
 *** Keywords ***
 Find example jar
                     ${jar} =            Execute                 find /opt/hadoop/share/hadoop/mapreduce/ -name "*.jar" | grep mapreduce-examples | grep -v sources | grep -v test
-                    RETURN            ${jar}
+                    [return]            ${jar}
 
 *** Test cases ***
 
